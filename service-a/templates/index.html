@@ -1,0 +1,107 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service A</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .card {
+            border-radius: 10px;
+        }
+        .btn-custom {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .btn-custom:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+        .result-box {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3>Test Service B</h3>
+            </div>
+            <div class="card-body">
+                <form id="testForm">
+                    <div class="form-group">
+                        <label for="option">Option:</label>
+                        <select id="option" name="option" class="form-control">
+                            <option value="success">Success</option>
+                            <option value="failure">Failure</option>
+                            <option value="random">Random</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="delay">Add Delay:</label>
+                        <select id="delay" name="delay" class="form-control">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="delay_interval">Delay Interval (seconds):</label>
+                        <input type="number" id="delay_interval" name="delay_interval" class="form-control" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="timeout">Timeout (seconds):</label>
+                        <input type="number" id="timeout" name="timeout" class="form-control" value="10">
+                    </div>
+                    <button type="submit" class="btn btn-custom">Test</button>
+                </form>
+                <div id="result" class="result-box alert alert-info" role="alert" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.getElementById('testForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            fetch('/test_service', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultBox = document.getElementById('result');
+                resultBox.style.display = 'block';
+                resultBox.textContent = JSON.stringify(data);
+                if (data.status === 'success') {
+                    resultBox.className = 'result-box alert alert-success';
+                } else if (data.status === 'failure') {
+                    resultBox.className = 'result-box alert alert-danger';
+                } else {
+                    resultBox.className = 'result-box alert alert-warning';
+                }
+            })
+            .catch(error => {
+                const resultBox = document.getElementById('result');
+                resultBox.style.display = 'block';
+                resultBox.textContent = 'Error: ' + error;
+                resultBox.className = 'result-box alert alert-danger';
+            });
+        });
+    </script>
+</body>
+</html>
